@@ -1,0 +1,6 @@
+/workspaces/Hackaton_be/src/main/java/pe/edu/vallegrande/api_reniec/ApiReniecApplication.java
+/workspaces/Hackaton_be/src/main/java/pe/edu/vallegrande/api_reniec/config/WebConfig.java
+/workspaces/Hackaton_be/src/main/java/pe/edu/vallegrande/api_reniec/controller/PersonaController.java
+/workspaces/Hackaton_be/src/main/java/pe/edu/vallegrande/api_reniec/model/Persona.java
+/workspaces/Hackaton_be/src/main/java/pe/edu/vallegrande/api_reniec/repository/PersonaRepository.java
+/workspaces/Hackaton_be/src/main/java/pe/edu/vallegrande/api_reniec/service/PersonaService.java
