@@ -1,0 +1,16 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: report
+  data:
+    mongodb:
+      uri: "mongodb+srv://lizbetarias:1234@cluster0.6hegc.mongodb.net/hackaton?retryWrites=true&w=majority"
+  codec:
+    max-in-memory-size: 10MB  # Aumenta el límite de bytes a 10 MB (ajusta según sea necesario)
+
+logging:
+  level:
+    io.r2dbc: DEBUG
+
