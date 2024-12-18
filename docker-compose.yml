@@ -1,9 +1,19 @@
-version: '3.9'
+version: '3.8'
 
 services:
-  app:
-    image: lizbet/reniec
-    container_name: reniec-app
+  reniecback:
+    image: lizbet/reniecback:latest
+    container_name: reniecback
     ports:
-      - "8080:8080"
-    restart: always
+      - "8080:8080" # Mapea el puerto 8080 del contenedor al 8080 del host
+
+  reniecfron:
+    image: lizbet/reniecfron:latest
+    container_name: reniecfron
+    ports:
+      - "4200:4200" # Mapea el puerto 4200 del contenedor al 4200 del host
+    depends_on:
+      - reniecback # El frontend espera que el backend esté activo
+
+#Comandos docker-composer up para activar todo el compose 
+#Antes construccion de imagenes del back y front del api de la reniec

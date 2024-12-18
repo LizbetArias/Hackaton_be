@@ -1,25 +1,33 @@
+# Fase de construcción
 FROM maven:3.9.0-eclipse-temurin-17 AS builder
 WORKDIR /app
+
+# Copiar el archivo pom.xml para aprovechar el caché en la descarga de dependencias
 COPY pom.xml ./
+
+# Descargar dependencias
+RUN mvn dependency:go-offline
+
+# Copiar el código fuente del proyecto
 COPY src ./src
+
+# Compilar la aplicación y generar el archivo JAR
 RUN mvn clean install -DskipTests
 
+# Imagen base para ejecutar la aplicación
 FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
+
+# Copiar el archivo JAR construido en la fase anterior
 COPY --from=builder /app/target/*.jar app.jar
 
-# Configuración de las variables de entorno con los datos proporcionados
-ENV DATABASE_URL=r2dbc:postgresql://ep-noisy-queen-a58mwjku.us-east-2.aws.neon.tech/neondb?sslmode=require \
-    DATABASE_USERNAME=neondb_owner \
-    DATABASE_PASSWORD=sxWq28JLvKUX
-
+# Exponer el puerto 8080 en el contenedor
 EXPOSE 8080
+
+# Comando para iniciar la aplicación
 ENTRYPOINT ["java", "-jar", "app.jar"]
 
-# sdk install java 17.0.11-jbr
-# mvn clean install -DskipTests
-# mvn spring-boot:run
-# docker build -t lizbet/prs1 .
-# docker push lizbet/prs1
-# docker-compose up
-# kubectl port-forward service/prs1 8080:30001 -n 01-lizbet
+# Instrucciones para ejecutar:
+# 1. Construir la imagen: docker build -t lizbet/mongodb-app .
+# 2. Subir la imagen: docker push lizbet/mongodb-app
+# 3. Ejecutar el contenedor: docker run -p 8080:8080 lizbet/mongodb-app
