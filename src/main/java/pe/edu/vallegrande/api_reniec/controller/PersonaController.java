@@ -1,6 +1,9 @@
 package pe.edu.vallegrande.api_reniec.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.*;
 import pe.edu.vallegrande.api_reniec.model.Persona;
 import pe.edu.vallegrande.api_reniec.service.PersonaService;
@@ -26,19 +29,38 @@ public class PersonaController {
         return personaService.registrarPersona(dni);
     }
 
-
     @GetMapping("/list")
     public Flux<Persona> listarPersonas() {
         return personaService.listarPersonas();
     }
 
-    @GetMapping("/{id}")
-    public Mono<Persona> obtenerPersonaPorId(@PathVariable Long id) {
-        return personaService.obtenerPersonaPorId(id);
+    @GetMapping("/{dni}")
+    public Mono<Persona> obtenerPersonaPorDni(@PathVariable String dni) {
+        return personaService.obtenerPersonaPorDni(dni);  // Ahora obtenemos por DNI
     }
 
-    @DeleteMapping("/{id}")
-    public Mono<Void> eliminarPersona(@PathVariable Long id) {
-        return personaService.eliminarPersona(id);
+    // Endpoint para eliminar una persona lógicamente (cambiar status a 'I') por DNI
+    @PutMapping("/eliminar/{dni}")
+    public Mono<Void> eliminarPersona(@PathVariable String dni) {
+        return personaService.eliminarPersonaPorDni(dni);  // Eliminar lógica por DNI
+    }
+
+    // Endpoint para restaurar una persona (cambiar status a 'A') por DNI
+    @PutMapping("/restaurar/{dni}")
+    public Mono<Persona> restaurarPersona(@PathVariable String dni) {
+        return personaService.restaurarPersonaPorDni(dni);  // Restaurar por DNI
+    }
+
+    // Endpoint para eliminar físicamente una persona por DNI
+    @DeleteMapping("/eliminar-fisicamente/{dni}")
+    public Mono<Void> eliminarPersonaFisicamente(@PathVariable String dni) {
+        return personaService.eliminarPersonaFisicamentePorDni(dni);  // Eliminar físicamente por DNI
+    }
+
+     // Endpoint para actualizar una persona por DNI
+     @PutMapping("/{dni}/actualizar-dni")
+    public Mono<Persona> actualizarDni(@PathVariable String dni, @RequestBody Map<String, String> body) {
+        String nuevoDni = body.get("nuevoDni");
+        return personaService.actualizarDni(dni, nuevoDni);
     }
 }

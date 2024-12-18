@@ -9,13 +9,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 @Service
 public class PersonaService {
     private final PersonaRepository personaRepository;
     private final WebClient webClient;
     private static final String TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Imp1bGlvLnF1aXNwZUB2YWxsZWdyYW5kZS5lZHUucGUifQ.6M-P2QMMvKFZEeMvTUXvkOooM02N_pWqt0OdlaYW3PM";
-
 
     public PersonaService(PersonaRepository personaRepository, WebClient.Builder webClientBuilder) {
         this.personaRepository = personaRepository;
@@ -37,8 +35,6 @@ public class PersonaService {
                 .doOnError(error -> System.err.println("Error en la consulta: " + error.getMessage()));
     }
 
-
-
     public Mono<Persona> registrarPersona(String dni) {
         return consultarDni(dni)  // Obtienes la respuesta como JsonNode
                 .flatMap(jsonNode -> {
@@ -50,11 +46,15 @@ public class PersonaService {
                         ObjectMapper objectMapper = new ObjectMapper();
                         Persona persona = objectMapper.treeToValue(jsonNode, Persona.class);
 
+                        // Establecer explícitamente el status como 'A'
+                        persona.setStatus("A");
+
                         // Imprimir el objeto Persona para verificar que la conversión fue correcta
-                        System.out.println("Objeto Persona creado: " + persona);
+                        System.out.println("Objeto Persona creado con status 'A': " + persona);
 
                         // Guardar el objeto Persona en la base de datos
-                        return personaRepository.save(persona);
+                        return personaRepository.save(persona)
+                                .doOnSuccess(savedPersona -> System.out.println("Persona guardada correctamente: " + savedPersona));
                     } catch (Exception e) {
                         // Imprimir detalles del error para ayudar a depurar
                         System.err.println("Error al convertir JSON a Persona: " + e.getMessage());
@@ -64,22 +64,54 @@ public class PersonaService {
                 });
     }
 
-
-
-
-
-
-
-
     public Flux<Persona> listarPersonas() {
         return personaRepository.findAll();
     }
 
-    public Mono<Persona> obtenerPersonaPorId(Long id) {
-        return personaRepository.findById(String.valueOf(id));
+    public Mono<Persona> obtenerPersonaPorDni(String dni) {
+        return personaRepository.findByDni(dni);  // Método para obtener persona por DNI
     }
 
-    public Mono<Void> eliminarPersona(Long id) {
-        return personaRepository.deleteById(String.valueOf(id));
+    // Método de eliminación lógica por DNI
+    public Mono<Void> eliminarPersonaPorDni(String dni) {
+        return personaRepository.findByDni(dni)
+                .flatMap(persona -> {
+                    // Cambiar el status a 'I' para eliminar lógicamente
+                    persona.setStatus("I");
+                    return personaRepository.save(persona).then();
+                });
     }
+
+    // Método de eliminación física por DNI (eliminar permanentemente)
+    public Mono<Void> eliminarPersonaFisicamentePorDni(String dni) {
+        return personaRepository.findByDni(dni)
+                .flatMap(persona -> {
+                    // Eliminar la persona de la base de datos de manera permanente
+                    return personaRepository.delete(persona).then();
+                });
+    }
+
+    // Método de restauración por DNI
+    public Mono<Persona> restaurarPersonaPorDni(String dni) {
+        return personaRepository.findByDni(dni)
+                .flatMap(persona -> {
+                    // Cambiar el status a 'A' para restaurar lógicamente
+                    persona.setStatus("A");
+                    return personaRepository.save(persona);
+                });
+    }
+
+    public Mono<Persona> actualizarDni(String dniActual, String dniNuevo) {
+        return personaRepository.findByDni(dniActual)
+                .flatMap(personaExistente -> {
+                    // Actualiza solo el DNI
+                    personaExistente.setDni(dniNuevo);
+                    return personaRepository.save(personaExistente)
+                            .doOnSuccess(updatedPersona -> 
+                                    System.out.println("DNI actualizado: " + updatedPersona));
+                })
+                .switchIfEmpty(Mono.error(new RuntimeException("Persona no encontrada con DNI: " + dniActual)));
+    }
+    
+    
 }

@@ -1,5 +1,6 @@
 package pe.edu.vallegrande.api_reniec.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -26,6 +27,9 @@ public class Persona {
     @JsonProperty("codVerifica")
     private String codVerifica;
 
+    @JsonProperty("status")
+    private String status = "A";  // El valor predeterminado sigue siendo "A" pero no se usará durante la conversión
+
     // Sobrescribir el método toString para una representación legible
     @Override
     public String toString() {
@@ -35,8 +39,7 @@ public class Persona {
                 ", apellidoPaterno='" + apellidoPaterno + '\'' +
                 ", apellidoMaterno='" + apellidoMaterno + '\'' +
                 ", codVerifica='" + codVerifica + '\'' +
+                ", status='" + status + '\'' + // Incluir el campo 'status' en el toString
                 '}';
     }
-
-
 }
