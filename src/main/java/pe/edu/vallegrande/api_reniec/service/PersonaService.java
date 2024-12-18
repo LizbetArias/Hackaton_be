@@ -101,16 +101,33 @@ public class PersonaService {
                 });
     }
 
-    public Mono<Persona> actualizarDni(String dniActual, String dniNuevo) {
+    // Método para actualizar una persona por DNI
+    public Mono<Persona> actualizarPersonaPorDni(String dniActual, String nuevoDni) {
+        if (dniActual.equals(nuevoDni)) {
+            return Mono.error(new RuntimeException("El nuevo DNI no puede ser igual al actual."));
+        }
+    
+        // Buscar la persona por el DNI actual
         return personaRepository.findByDni(dniActual)
-                .flatMap(personaExistente -> {
-                    // Actualiza solo el DNI
-                    personaExistente.setDni(dniNuevo);
-                    return personaRepository.save(personaExistente)
-                            .doOnSuccess(updatedPersona -> 
-                                    System.out.println("DNI actualizado: " + updatedPersona));
-                })
-                .switchIfEmpty(Mono.error(new RuntimeException("Persona no encontrada con DNI: " + dniActual)));
+                .flatMap(personaExistente -> 
+                    // Consulta la nueva información de RENIEC para obtener los nuevos datos
+                    consultarDni(nuevoDni)  
+                        .flatMap(jsonNode -> {
+                            try {
+                                // Aquí actualizamos solo los campos que no sean el DNI
+                                personaExistente.setNombres(jsonNode.get("nombres").asText());
+                                personaExistente.setApellidoPaterno(jsonNode.get("apellidoPaterno").asText());
+                                personaExistente.setApellidoMaterno(jsonNode.get("apellidoMaterno").asText());
+                                personaExistente.setCodVerifica(jsonNode.get("codVerifica").asText());
+    
+                                // Guardar la persona actualizada en la base de datos
+                                return personaRepository.save(personaExistente);
+                            } catch (Exception e) {
+                                return Mono.error(new RuntimeException("Error al procesar los datos de RENIEC", e));
+                            }
+                        })
+                )
+                .switchIfEmpty(Mono.error(new RuntimeException("No se encontró una persona con el DNI actual: " + dniActual)));
     }
     
     

@@ -3,7 +3,8 @@ package pe.edu.vallegrande.api_reniec.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.Map;
-
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.vallegrande.api_reniec.model.Persona;
 import pe.edu.vallegrande.api_reniec.service.PersonaService;
@@ -57,10 +58,16 @@ public class PersonaController {
         return personaService.eliminarPersonaFisicamentePorDni(dni);  // Eliminar físicamente por DNI
     }
 
-     // Endpoint para actualizar una persona por DNI
-     @PutMapping("/{dni}/actualizar-dni")
-    public Mono<Persona> actualizarDni(@PathVariable String dni, @RequestBody Map<String, String> body) {
-        String nuevoDni = body.get("nuevoDni");
-        return personaService.actualizarDni(dni, nuevoDni);
+    // Endpoint para actualizar una persona por DNI
+    @PutMapping("/actualizar/{dniActual}/{nuevoDni}")
+    public Mono<ResponseEntity<Persona>> actualizarPersona(
+            @PathVariable("dniActual") String dniActual,
+            @PathVariable("nuevoDni") String nuevoDni) {
+        
+        return personaService.actualizarPersonaPorDni(dniActual, nuevoDni)
+                .map(persona -> ResponseEntity.ok(persona))  // Si se encuentra y actualiza, devuelve la persona
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));  // Si no se encuentra, devuelve un 404
     }
+    
+
 }
