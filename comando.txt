@@ -1,0 +1,11 @@
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo mv minikube-linux-amd64 /usr/local/bin/minikube
+sudo chmod +x /usr/local/bin/minikube
+ 
+para instalar minikube en gitpod
+
+
+curl -LO "https://dl.k8s.io/release/v1.27.0/bin/linux/amd64/kubectl"
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin/kubectl
+ para kubectl 

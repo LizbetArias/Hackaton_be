@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reniec-deployment
+  namespace: lizreniec  
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: reniec
+  template:
+    metadata:
+      labels:
+        app: reniec
+    spec:
+      containers:
+      - name: reniecback
+        image: lizbet/reniecback:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+      - name: reniecfron
+        image: lizbet/reniecfron:latest
+        ports:
+        - containerPort: 4200
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
