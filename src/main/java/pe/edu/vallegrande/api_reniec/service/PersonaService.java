@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class PersonaService {
     private final PersonaRepository personaRepository;
     private final WebClient webClient;
-    private static final String TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Imp1bGlvLnF1aXNwZUB2YWxsZWdyYW5kZS5lZHUucGUifQ.6M-P2QMMvKFZEeMvTUXvkOooM02N_pWqt0OdlaYW3PM";
+    private static final String TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Impvc2UucXVpc3BlMjUwNjIyQGdtYWlsLmNvbSJ9.5P6P6RLYbWPKtSvhXOhx1jdcExvxhA82GJmkg9rNiPg";
 
     public PersonaService(PersonaRepository personaRepository, WebClient.Builder webClientBuilder) {
         this.personaRepository = personaRepository;

@@ -8,8 +8,8 @@ spec:
     app: reniec
   ports:
     - protocol: TCP
-      port: 8080
-      targetPort: 8080
+      port: 8060
+      targetPort: 8060
     - protocol: TCP
       port: 4200
       targetPort: 4200

@@ -5,7 +5,7 @@ services:
     image: lizbet/reniecback:latest
     container_name: reniecback
     ports:
-      - "8080:8080" # Mapea el puerto 8080 del contenedor al 8080 del host
+      - "8060:8060" # Mapea el puerto 8080 del contenedor al 8080 del host
 
   reniecfron:
     image: lizbet/reniecfron:latest
